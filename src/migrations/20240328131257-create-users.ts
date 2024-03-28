@@ -7,10 +7,9 @@ export async function up(db: Kysely<any>): Promise<void> {
     // https://kysely-org.github.io/kysely-apidoc/classes/ColumnDefinitionBuilder.html#check
     await db.schema
         .createTable("users")
-        .addColumn("id", "integer", (col) => col.primaryKey())
+        .addColumn("id", "integer", (col) => col.primaryKey().autoIncrement())
         .addColumn("username", "varchar(63)", (col) => col.notNull().unique())
         .addColumn("password_hash", "varchar(127)", (col) => col.notNull())
-        .addColumn("name", "varchar(63)", (col) => col.notNull().unique())
         .addColumn("user_level", "integer", (col) =>
             col.defaultTo(USER_LEVEL.REGULAR_USER)
         )

@@ -13,7 +13,6 @@ async function migrateToLatest() {
         provider: new FileMigrationProvider({
             fs,
             path,
-            // This needs to be an absolute path.
             migrationFolder: path.join(__dirname, "../migrations"),
         }),
     });
