@@ -4,5 +4,5 @@ export interface GamesTable {
     id: Generated<number>;
     date: string;
     user_id: number;
-    notes: string;
+    notes: string | null;
 }
