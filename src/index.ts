@@ -5,6 +5,8 @@ import cookieParser from "cookie-parser";
 
 // import { players, decks, games, auth } from "./routes";
 import db from "./models";
+import { players } from "./routes";
+import { checkAuthCookie } from "./utils/helpers";
 // import { checkAuthCookie, disallowRestrictedUsers } from "./utils/helpers";
 
 const app = express();
@@ -17,25 +19,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// app.use(checkAuthCookie);
+app.use(checkAuthCookie);
 // app.use(disallowRestrictedUsers);
 
-// app.use("/players", players);
+app.use("/players", players);
 // app.use("/decks", decks);
 // app.use("/games", games);
 // app.use("/auth", auth);
 
 app.get("/test", async (_, res) => {
     const x = await db
-        // @ts-ignore
-        .selectFrom("Players")
-        // @ts-ignore
-        .selectAll("Players")
-        // @ts-ignore
-        .where("id", "=", 2)
+        .selectFrom("users")
+        .selectAll("users")
+        .where("id", "=", 1)
         .executeTakeFirst();
     console.log("***player1", x);
-    return res.status(200).send({ message: "hi! :^)))" });
+    return res.status(200).send({ message: "hi!! :^)))" });
 });
 
 // db.sequelize.sync().then(() => {

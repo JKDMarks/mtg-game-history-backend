@@ -18,6 +18,6 @@ export default {
         password: process.env.DATABASE_PASSWORD,
         database: process.env.DATABASE,
         host: process.env.DATABASE_HOST,
-        dialect: "mysql",
+        dialect: process.env.DATABASE_DIALECT,
     },
 };
