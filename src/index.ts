@@ -31,6 +31,8 @@ app.get("/test", async (_, res) => {
         .selectFrom("Players")
         // @ts-ignore
         .selectAll("Players")
+        // @ts-ignore
+        .where("id", "=", 2)
         .executeTakeFirst();
     console.log("***player1", x);
     return res.status(200).send({ message: "hi! :^)))" });
