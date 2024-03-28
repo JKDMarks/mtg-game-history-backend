@@ -19,6 +19,8 @@ const seedDecks = async (db: Kysely<Database>) => {
             { id: 11, name: "Alesha", player_id: 6 },
         ])
         .execute();
+
+    console.log("Decks seeded successfully");
 };
 
 export default seedDecks;

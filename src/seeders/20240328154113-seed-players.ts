@@ -14,6 +14,8 @@ const seedPlayers = async (db: Kysely<Database>) => {
             { id: 6, user_id: 1, name: "Dan Shapiro" },
         ])
         .execute();
+
+    console.log("Players seeded successfully");
 };
 
 export default seedPlayers;

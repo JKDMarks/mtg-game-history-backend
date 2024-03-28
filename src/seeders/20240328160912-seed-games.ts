@@ -33,6 +33,8 @@ const seedGames = async (db: Kysely<Database>) => {
             // },
         ])
         .execute();
+
+    console.log("Games seeded successfully");
 };
 
 export default seedGames;

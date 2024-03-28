@@ -50,6 +50,8 @@ const seedGamePlayerDecks = async (db: Kysely<Database>) => {
             },
         ])
         .execute();
+
+    console.log("GPDs seeded successfully");
 };
 
 export default seedGamePlayerDecks;

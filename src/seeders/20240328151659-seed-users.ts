@@ -39,6 +39,8 @@ const seedUsers = async (db: Kysely<Database>) => {
             },
         ])
         .execute();
+
+    console.log("Users seeded successfully");
 };
 
 export default seedUsers;
