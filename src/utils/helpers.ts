@@ -42,18 +42,17 @@ export const checkAuthCookie = async (
         try {
             const { [CLIENT_COOKIE_KEY]: authCookieValue } = req.cookies;
             // TODO: Revert
-            // if (!authCookieValue) {
-            //     return res.status(403).send({ message: "Not logged in" });
-            // }
+            if (!authCookieValue) {
+                return res.status(403).send({ message: "Not logged in" });
+            }
 
-            // const decrypted = decrypt(authCookieValue);
-            // const { playerId } = JSON.parse(decrypted);
-            // const user = await findUserById(playerId);
-            // if (!user) {
-            //     return res.status(403).send({ message: "Not logged in" });
-            // }
-            // req.currentUser = user;
-            req.currentUser = { id: 1 };
+            const decrypted = decrypt(authCookieValue);
+            const { userId } = JSON.parse(decrypted);
+            const user = await findUserById(userId);
+            if (!user) {
+                return res.status(403).send({ message: "Not logged in" });
+            }
+            req.currentUser = user;
         } catch (e) {
             return sendError(res, e);
         }

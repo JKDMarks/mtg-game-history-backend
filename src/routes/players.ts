@@ -1,22 +1,18 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 
 import { findAllPlayers, findOnePlayer } from "../models/players";
 
 const playersRouter = Router();
 
-playersRouter.get("/", async (req: Request, res: Response) => {
+playersRouter.get("/", async (req, res) => {
     const players = await findAllPlayers(req.currentUser.id);
 
     res.json(players);
 });
 
-// playersRouter.get("/me", async (req, res) => {
-//     res.send(req.currentPlayer);
-// });
-
 playersRouter.get("/:playerId", async (req, res) => {
     const playerId = parseInt(req.params.playerId);
-    const player = await findOnePlayer(req.currentUser.id, playerId);
+    const player = await findOnePlayer({ playerId });
     return res.json(player);
 });
 

@@ -3,11 +3,8 @@ import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
 
-// import { players, decks, games, auth } from "./routes";
-import db from "./models";
-import { players } from "./routes";
+import { auth, players, users } from "./routes";
 import { checkAuthCookie } from "./utils/helpers";
-// import { checkAuthCookie, disallowRestrictedUsers } from "./utils/helpers";
 
 const app = express();
 const corsOptions = {
@@ -25,19 +22,15 @@ app.use(checkAuthCookie);
 app.use("/players", players);
 // app.use("/decks", decks);
 // app.use("/games", games);
-// app.use("/auth", auth);
+app.use("/auth", auth);
+app.use("/users", users);
 
-app.get("/test", async (_, res) => {
-    const x = await db
-        .selectFrom("users")
-        .selectAll("users")
-        .where("id", "=", 1)
-        .executeTakeFirst();
-    console.log("***player1", x);
-    return res.status(200).send({ message: "hi!! :^)))" });
+app.get("/me", async (req, res) => {
+    return res.send(req.currentUser);
 });
 
-// db.sequelize.sync().then(() => {
+app.get("/test", async (_, res) => {
+    return res.status(200).send({ message: "hi! :^)" });
+});
+
 app.listen(process.env.PORT);
-// app.listen(3001);
-// });

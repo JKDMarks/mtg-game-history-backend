@@ -24,3 +24,25 @@ export const findUserById = async (id: number) =>
         .select(nonsensitiveUserColumns)
         .where("id", "=", id)
         .executeTakeFirst();
+
+export const findUserByUsername = async (username: string) =>
+    await db
+        .selectFrom("users")
+        .selectAll("users")
+        // .select(nonsensitiveUserColumns)
+        .where("username", "=", username)
+        .executeTakeFirst();
+
+export const createUser = async ({
+    username,
+    password_hash,
+    user_level,
+}: {
+    username: string;
+    password_hash: string;
+    user_level: number;
+}) =>
+    await db
+        .insertInto("users")
+        .values({ username, password_hash, user_level })
+        .executeTakeFirst();
