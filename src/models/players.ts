@@ -8,7 +8,7 @@ export interface PlayersTable {
     name: string;
 }
 
-export const withDecks = (eb: ExpressionBuilder<Database, "players">) => {
+const withDecks = (eb: ExpressionBuilder<Database, "players">) => {
     return jsonArrayFrom(
         eb
             .selectFrom("decks")
@@ -30,13 +30,14 @@ export const findAllPlayers = async (currUserId?: number) => {
 
     return await query.execute();
 };
+
 export const findOnePlayer = async ({
     playerId,
-    currUserId,
+    userId,
     includeDecks = true,
 }: {
     playerId?: number;
-    currUserId?: number;
+    userId?: number;
     includeDecks?: boolean;
 }) => {
     let query = db.selectFrom("players").selectAll("players");
@@ -45,8 +46,8 @@ export const findOnePlayer = async ({
         query = query.where("id", "=", playerId);
     }
 
-    if (currUserId) {
-        query = query.where("user_id", "=", currUserId);
+    if (userId) {
+        query = query.where("user_id", "=", userId);
     }
 
     if (includeDecks) {

@@ -7,11 +7,4 @@ const USER_LEVEL = {
     ADMIN: 9,
 };
 
-// const GPD_QUERY_OPTIONS = {
-//     include: ["Player", "Deck"],
-//     attributes: {
-//         exclude: ["id", "gameId", "playerId", "deckId"],
-//     },
-// };
-
 export { CLIENT_COOKIE_KEY, USER_LEVEL };

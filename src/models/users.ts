@@ -29,7 +29,6 @@ export const findUserByUsername = async (username: string) =>
     await db
         .selectFrom("users")
         .selectAll("users")
-        // .select(nonsensitiveUserColumns)
         .where("username", "=", username)
         .executeTakeFirst();
 
@@ -41,8 +40,9 @@ export const createUser = async ({
     username: string;
     password_hash: string;
     user_level: number;
-}) =>
-    await db
+}) => {
+    return await db
         .insertInto("users")
         .values({ username, password_hash, user_level })
-        .executeTakeFirst();
+        .execute();
+};

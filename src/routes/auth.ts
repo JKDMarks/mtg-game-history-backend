@@ -1,7 +1,6 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 
-import db from "../models";
 import { CLIENT_COOKIE_KEY, USER_LEVEL } from "../utils/constants";
 import { encrypt, sendError } from "../utils/helpers";
 import { createUser, findUserByUsername } from "../models/users";
@@ -58,18 +57,21 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/signup", async (req, res) => {
-    const { name, username, password } = req.body;
+    const { username, password } = req.body;
     if (
         !username ||
         !password ||
-        !name ||
         typeof username !== "string" ||
-        typeof name !== "string" ||
         typeof password !== "string"
     ) {
         return res
             .status(401)
-            .send({ message: "Missing username, name, or password" });
+            .send({ message: "Missing username or password" });
+    }
+
+    const validUsername = username.match(/^[a-z0-9_]{1,20}$/i);
+    if (!validUsername) {
+        return res.status(401).send({ message: "Invalid username" });
     }
 
     try {

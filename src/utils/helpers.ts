@@ -1,9 +1,8 @@
 import CryptoJS from "crypto-js";
 
-import db from "../models";
 import { CLIENT_COOKIE_KEY, USER_LEVEL } from "./constants";
 import { NextFunction, Request, Response } from "express";
-import { findUserById, UsersTable } from "../models/users";
+import { findUserById } from "../models/users";
 
 export const encrypt = (message: string | number | object) => {
     let stringMessage;
@@ -41,7 +40,6 @@ export const checkAuthCookie = async (
     if (!req.url.startsWith("/auth")) {
         try {
             const { [CLIENT_COOKIE_KEY]: authCookieValue } = req.cookies;
-            // TODO: Revert
             if (!authCookieValue) {
                 return res.status(403).send({ message: "Not logged in" });
             }

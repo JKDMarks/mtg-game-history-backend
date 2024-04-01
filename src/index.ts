@@ -3,7 +3,7 @@ import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
 
-import { auth, players, users } from "./routes";
+import { auth, games, players, users } from "./routes";
 import { checkAuthCookie } from "./utils/helpers";
 
 const app = express();
@@ -21,7 +21,7 @@ app.use(checkAuthCookie);
 
 app.use("/players", players);
 // app.use("/decks", decks);
-// app.use("/games", games);
+app.use("/games", games);
 app.use("/auth", auth);
 app.use("/users", users);
 
