@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 
 import { auth, games, players, users } from "./routes";
 import { checkAuthCookie } from "./utils/helpers";
+import decks from "./routes/decks";
 
 const app = express();
 const corsOptions = {
@@ -20,7 +21,7 @@ app.use(checkAuthCookie);
 // app.use(disallowRestrictedUsers);
 
 app.use("/players", players);
-// app.use("/decks", decks);
+app.use("/decks", decks);
 app.use("/games", games);
 app.use("/auth", auth);
 app.use("/users", users);

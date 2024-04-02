@@ -24,11 +24,15 @@ export const decrypt = (cipher: string) => {
     return bytes.toString(CryptoJS.enc.Utf8);
 };
 
-export const sendError = (res: Response, e: unknown) => {
+export const sendError = (
+    res: Response,
+    e: unknown,
+    errorCode: number = 500
+) => {
     if (typeof e == "string") {
-        return res.status(500).send({ message: e });
+        return res.status(errorCode).send({ message: e });
     } else if (e instanceof Error) {
-        return res.status(500).send({ message: e.message });
+        return res.status(errorCode).send({ message: e.message });
     }
 };
 

@@ -44,5 +44,5 @@ export const createUser = async ({
     return await db
         .insertInto("users")
         .values({ username, password_hash, user_level })
-        .execute();
+        .executeTakeFirst();
 };

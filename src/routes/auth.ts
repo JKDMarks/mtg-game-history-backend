@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 
 import { CLIENT_COOKIE_KEY, USER_LEVEL } from "../utils/constants";
 import { encrypt, sendError } from "../utils/helpers";
-import { createUser, findUserByUsername } from "../models/users";
+import { createUser, findUserById, findUserByUsername } from "../models/users";
 
 const FALLBACK_MSG =
     "No user found with that username, or username and password don't match";
@@ -77,12 +77,12 @@ authRouter.post("/signup", async (req, res) => {
     try {
         const salt = bcrypt.genSaltSync(10);
         const passwordHash = bcrypt.hashSync(password, salt);
-        await createUser({
+        const insertQueryResult = await createUser({
             username,
             password_hash: passwordHash,
             user_level: USER_LEVEL.RESTRICTED,
         });
-        const newUser = await findUserByUsername(username);
+        const newUser = await findUserById(Number(insertQueryResult));
         if (!newUser) {
             throw new Error("Something went wrong during user creation");
         }

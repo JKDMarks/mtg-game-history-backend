@@ -1,6 +1,7 @@
 import { Router } from "express";
 
-import { findAllPlayers, findOnePlayer } from "../models/players";
+import { createPlayer, findAllPlayers, findOnePlayer } from "../models/players";
+import { sendError } from "../utils/helpers";
 
 const playersRouter = Router();
 
@@ -16,19 +17,18 @@ playersRouter.get("/:playerId", async (req, res) => {
     return res.json(player);
 });
 
-// playersRouter.post("/", async (req, res) => {
-//     const { name } = req.body;
-//     try {
-//         const newPlayer = await db.Player.create({ name });
-//         const safeToSendNewPlayer = await db.Player.findOne({
-//             where: { id: newPlayer.id },
-//         });
-//         return res.send(safeToSendNewPlayer);
-//     } catch (e) {
-//         return res
-//             .status(401)
-//             .send({ message: e?.errors?.[0]?.message || e.message });
-//     }
-// });
+playersRouter.post("/", async (req, res) => {
+    const { name } = req.body;
+    try {
+        const insertQueryResult = await createPlayer(name, req.currentUser.id);
+        const newPlayer = await findOnePlayer({
+            playerId: Number(insertQueryResult.insertId),
+            includeDecks: false,
+        });
+        return res.send(newPlayer);
+    } catch (e) {
+        return sendError(res, e);
+    }
+});
 
 export default playersRouter;

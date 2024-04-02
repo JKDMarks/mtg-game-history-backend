@@ -34,10 +34,12 @@ export const findAllPlayers = async (currUserId?: number) => {
 export const findOnePlayer = async ({
     playerId,
     userId,
+    name,
     includeDecks = true,
 }: {
     playerId?: number;
     userId?: number;
+    name?: string;
     includeDecks?: boolean;
 }) => {
     let query = db.selectFrom("players").selectAll("players");
@@ -50,9 +52,20 @@ export const findOnePlayer = async ({
         query = query.where("user_id", "=", userId);
     }
 
+    if (name) {
+        query = query.where("name", "=", name);
+    }
+
     if (includeDecks) {
         query = query.select(withDecks);
     }
 
     return await query.executeTakeFirst();
+};
+
+export const createPlayer = (name: string, userId: number) => {
+    return db
+        .insertInto("players")
+        .values({ name, user_id: userId })
+        .executeTakeFirst();
 };

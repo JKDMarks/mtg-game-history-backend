@@ -8,7 +8,7 @@ export async function up(db: Kysely<any>): Promise<void> {
         .addColumn("user_id", "integer", (col) =>
             col.references("users.id").onDelete("cascade").notNull()
         )
-        .addColumn("notes", "varchar(255)")
+        .addColumn("notes", "varchar(1023)")
         .execute();
 
     await db.schema
