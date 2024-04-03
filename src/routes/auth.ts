@@ -82,7 +82,7 @@ authRouter.post("/signup", async (req, res) => {
             password_hash: passwordHash,
             user_level: USER_LEVEL.RESTRICTED,
         });
-        const newUser = await findUserById(Number(insertQueryResult));
+        const newUser = await findUserById(Number(insertQueryResult.insertId));
         if (!newUser) {
             throw new Error("Something went wrong during user creation");
         }

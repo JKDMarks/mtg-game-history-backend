@@ -14,11 +14,13 @@ const withGPDs = (eb: ExpressionBuilder<Database, "games">) => {
         eb
             .selectFrom("game_player_decks")
             .select([
+                "id",
                 "game_player_decks.is_winner",
                 withPlayerFromGPD,
                 withDeck,
             ])
             .whereRef("games.id", "=", "game_player_decks.game_id")
+            .orderBy("id")
     ).as("game_player_decks");
 };
 
@@ -51,7 +53,15 @@ const withDeck = (eb: ExpressionBuilder<Database, "game_player_decks">) => {
     ).as("deck");
 };
 
-export const findAllGames = async (userId?: number) => {
+export const findAllGames = async ({
+    userId,
+    playerId,
+    deckId,
+}: {
+    userId?: number;
+    playerId?: number;
+    deckId?: number;
+}) => {
     let query = db
         .selectFrom("games")
         .selectAll("games")
@@ -59,7 +69,29 @@ export const findAllGames = async (userId?: number) => {
         .orderBy("id");
 
     if (userId) {
-        query = query.where("user_id", "=", userId);
+        query = query.where("games.user_id", "=", userId);
+    }
+
+    if (playerId) {
+        query = query
+            .innerJoin(
+                "game_player_decks",
+                "game_player_decks.game_id",
+                "games.id"
+            )
+            .innerJoin("players", "players.id", "game_player_decks.player_id")
+            .where("players.id", "=", playerId);
+    }
+
+    if (deckId) {
+        query = query
+            .innerJoin(
+                "game_player_decks",
+                "game_player_decks.game_id",
+                "games.id"
+            )
+            .innerJoin("decks", "decks.id", "game_player_decks.deck_id")
+            .where("decks.id", "=", deckId);
     }
 
     return await query.execute();

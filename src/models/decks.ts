@@ -27,7 +27,8 @@ export const findOneDeck = async ({
 }) => {
     let query = db
         .selectFrom("decks")
-        .selectAll("decks")
+        .select(["id", "user_id", "name"])
+        .select(withPlayer)
         .where("decks.id", "=", deckId);
 
     if (userId) {

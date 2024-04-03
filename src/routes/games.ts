@@ -9,7 +9,7 @@ import { findOneDeck } from "../models/decks";
 const gamesRouter = Router();
 
 gamesRouter.get("/", async (req, res) => {
-    const games = await findAllGames(req.currentUser.id);
+    const games = await findAllGames({ userId: req.currentUser.id });
 
     return res.send(games);
 });
@@ -28,6 +28,28 @@ gamesRouter.get("/:gameId", async (req, res) => {
     }
 
     return res.status(404).send({ message: "No game found with that id" });
+});
+
+gamesRouter.get("/player/:playerId", async (req, res) => {
+    const playerId = parseInt(req.params.playerId);
+    const games = isNaN(playerId)
+        ? []
+        : await findAllGames({
+              userId: req.currentUser.id,
+              playerId,
+          });
+    return res.json(games);
+});
+
+gamesRouter.get("/deck/:deckId", async (req, res) => {
+    const deckId = parseInt(req.params.deckId);
+    const games = isNaN(deckId)
+        ? []
+        : await findAllGames({
+              userId: req.currentUser.id,
+              deckId,
+          });
+    return res.json(games);
 });
 
 gamesRouter.post("/", async (req, res) => {
