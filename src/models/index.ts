@@ -1,4 +1,3 @@
-import { createKysely } from "@vercel/postgres-kysely";
 import { Kysely, MysqlDialect } from "kysely";
 import { createPool } from "mysql2";
 
@@ -38,12 +37,13 @@ export const dialect = new MysqlDialect({
 });
 
 const db =
-    process.env.NODE_ENV === "production"
-        ? createKysely<Database>({
-              connectionString: process.env.DATABASE_URL,
-          })
-        : new Kysely<Database>({
-              dialect,
-          });
+    // process.env.NODE_ENV === "production"
+    //     ? createKysely<Database>({
+    //           connectionString: process.env.DATABASE_URL,
+    //       })
+    //     :
+    new Kysely<Database>({
+        dialect,
+    });
 
 export default db;
