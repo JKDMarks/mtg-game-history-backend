@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { CookieOptions, Router } from "express";
 import bcrypt from "bcryptjs";
 
 import { CLIENT_COOKIE_KEY, USER_LEVEL } from "../utils/constants";
@@ -7,6 +7,12 @@ import { createUser, findUserById, findUserByUsername } from "../models/users";
 
 const FALLBACK_MSG =
     "No user found with that username, or username and password don't match";
+
+const cookieOptions: CookieOptions = {
+    secure: true, // process.env.NODE_ENV === "production",
+    httpOnly: true,
+    sameSite: "none",
+};
 
 const authRouter = Router();
 
@@ -39,8 +45,7 @@ authRouter.post("/login", async (req, res) => {
             const date = new Date();
             date.setDate(date.getDate() + 30);
             res.cookie(CLIENT_COOKIE_KEY, encrypt({ userId: user.id }), {
-                secure: process.env.NODE_ENV === "production",
-                httpOnly: true,
+                ...cookieOptions,
                 expires: date,
             });
             return res.send({ loggedIn: true });
@@ -90,8 +95,7 @@ authRouter.post("/signup", async (req, res) => {
         const date = new Date();
         date.setDate(date.getDate() + 30);
         res.cookie(CLIENT_COOKIE_KEY, encrypt({ userId: newUser.id }), {
-            secure: process.env.NODE_ENV === "production",
-            httpOnly: true,
+            ...cookieOptions,
             expires: date,
         });
         return res.send({ loggedIn: true });
