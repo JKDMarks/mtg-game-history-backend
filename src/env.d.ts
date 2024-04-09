@@ -13,6 +13,7 @@ declare global {
             FRONTEND_URL: string;
             USE_HTTPS: string;
             NODE_ENV: string;
+            BACKEND_URL: string;
         }
     }
 }

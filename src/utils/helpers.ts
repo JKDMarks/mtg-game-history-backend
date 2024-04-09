@@ -3,6 +3,7 @@ import CryptoJS from "crypto-js";
 import { CLIENT_COOKIE_KEY, USER_LEVEL } from "./constants";
 import { NextFunction, Request, Response } from "express";
 import { findUserById } from "../models/users";
+import { Next } from "mysql2/typings/mysql/lib/parsers/typeCast";
 
 export const encrypt = (message: string | number | object) => {
     let stringMessage;
@@ -75,4 +76,12 @@ export const disallowRestrictedUsers = async (
         return res.status(401).send({ message: "Cannot perform that action" });
     }
     next();
+};
+
+export const setHeaders = async (_: Request, res: Response, next: Next) => {
+    res.setHeader(
+        "Content-Security-Policy",
+        `script-src 'self' ${process.env.BACKEND_URL.split(",").join(" ")}`
+    );
+    return next();
 };

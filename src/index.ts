@@ -6,7 +6,7 @@ import https from "https";
 import "dotenv/config";
 
 import { auth, games, players, users } from "./routes";
-import { checkAuthCookie } from "./utils/helpers";
+import { checkAuthCookie, setHeaders } from "./utils/helpers";
 import decks from "./routes/decks";
 
 const app = express();
@@ -21,6 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(checkAuthCookie);
+app.use(setHeaders);
 // app.use(disallowRestrictedUsers);
 
 app.use("/players", players);
