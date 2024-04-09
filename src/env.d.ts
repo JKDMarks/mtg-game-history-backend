@@ -11,6 +11,7 @@ declare global {
             DATABASE_URL: string;
             CLIENT_COOKIE_VALUE: string;
             FRONTEND_URL: string;
+            USE_HTTPS: string;
         }
     }
 }
