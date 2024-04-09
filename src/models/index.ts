@@ -1,5 +1,6 @@
 import { Kysely, MysqlDialect } from "kysely";
 import { createPool } from "mysql2";
+import "dotenv/config";
 
 import config from "../config/config";
 import { UsersTable } from "./users";

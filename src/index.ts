@@ -2,6 +2,7 @@ import "dotenv/config";
 import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 
 import { auth, games, players, users } from "./routes";
 import { checkAuthCookie } from "./utils/helpers";
