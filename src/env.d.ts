@@ -12,6 +12,7 @@ declare global {
             CLIENT_COOKIE_VALUE: string;
             FRONTEND_URL: string;
             USE_HTTPS: string;
+            NODE_ENV: string;
         }
     }
 }
