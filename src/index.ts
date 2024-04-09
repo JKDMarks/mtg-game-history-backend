@@ -10,8 +10,9 @@ import { checkAuthCookie } from "./utils/helpers";
 import decks from "./routes/decks";
 
 const app = express();
+
 const corsOptions = {
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL.split(","),
     credentials: true,
 };
 app.use(cors(corsOptions));
