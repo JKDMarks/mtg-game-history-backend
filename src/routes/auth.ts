@@ -40,7 +40,6 @@ authRouter.post("/login", async (req, res) => {
             password,
             user.password_hash
         );
-
         if (doesPasswordMatch) {
             const date = new Date();
             date.setDate(date.getDate() + 30);
