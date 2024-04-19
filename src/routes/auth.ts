@@ -9,7 +9,7 @@ const FALLBACK_MSG =
     "No user found with that username, or username and password don't match";
 
 const cookieOptions: CookieOptions = {
-    secure: true, // process.env.NODE_ENV === "production",
+    secure: true,
     httpOnly: true,
     sameSite: "none",
 };

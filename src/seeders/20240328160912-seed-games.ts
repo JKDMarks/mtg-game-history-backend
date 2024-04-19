@@ -15,22 +15,6 @@ const seedGames = async (db: Kysely<Database>) => {
                 date: "2023-09-06",
                 user_id: 1,
             },
-            // {
-            //     date: "2023-09-07",
-            //     user_id: jeff.id,
-            // },
-            // {
-            //     date: "2024-01-15",
-            //     user_id: peter.id,
-            // },
-            // {
-            //     date: "2024-03-15",
-            //     user_id: peter.id,
-            // },
-            // {
-            //     date: "2024-03-16",
-            //     user_id: peter.id,
-            // },
         ])
         .execute();
 

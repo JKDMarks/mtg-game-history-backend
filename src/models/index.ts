@@ -25,7 +25,6 @@ export const dialect = new MysqlDialect({
         host: config[env as keyof typeof config].host,
         user: config[env as keyof typeof config].username,
         password: config[env as keyof typeof config].password,
-        // port: 3306,
         connectionLimit: 10,
         typeCast: function (field, next) {
             if (field.type === "DATE") {

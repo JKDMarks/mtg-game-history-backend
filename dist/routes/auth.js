@@ -19,7 +19,7 @@ const helpers_1 = require("../utils/helpers");
 const users_1 = require("../models/users");
 const FALLBACK_MSG = "No user found with that username, or username and password don't match";
 const cookieOptions = {
-    secure: true, // process.env.NODE_ENV === "production",
+    secure: true,
     httpOnly: true,
     sameSite: "none",
 };

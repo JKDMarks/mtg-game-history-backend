@@ -15,7 +15,6 @@ exports.dialect = new kysely_1.MysqlDialect({
         host: config_1.default[exports.env].host,
         user: config_1.default[exports.env].username,
         password: config_1.default[exports.env].password,
-        // port: 3306,
         connectionLimit: 10,
         typeCast: function (field, next) {
             if (field.type === "DATE") {
