@@ -37,14 +37,8 @@ export const dialect = new MysqlDialect({
     }),
 });
 
-const db =
-    // process.env.NODE_ENV === "production"
-    //     ? createKysely<Database>({
-    //           connectionString: process.env.DATABASE_URL,
-    //       })
-    //     :
-    new Kysely<Database>({
-        dialect,
-    });
+const db = new Kysely<Database>({
+    dialect,
+});
 
 export default db;

@@ -8,10 +8,7 @@ declare global {
             DATABASE: string;
             DATABASE_HOST: string;
             DATABASE_DIALECT: string;
-            DATABASE_URL: string;
-            CLIENT_COOKIE_VALUE: string;
             FRONTEND_URL: string;
-            USE_HTTPS: string;
             NODE_ENV: string;
             BACKEND_URL: string;
         }

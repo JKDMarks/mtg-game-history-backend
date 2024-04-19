@@ -1,8 +1,6 @@
 import cors from "cors";
 import express from "express";
 import cookieParser from "cookie-parser";
-import { readFileSync } from "fs";
-import https from "https";
 import "dotenv/config";
 
 import { auth, games, players, users } from "./routes";
@@ -38,17 +36,4 @@ app.get("/test", async (_, res) => {
     return res.status(200).send({ message: "hi! :^)" });
 });
 
-try {
-    if (process.env.USE_HTTPS !== "true") {
-        throw new Error("Not using HTTPS");
-    }
-    const options = {
-        key: readFileSync(process.env.HOME + "/certs/key.pem"),
-        cert: readFileSync(process.env.HOME + "/certs/cert.pem"),
-    };
-    https.createServer(options, app).listen(process.env.PORT);
-    console.log("Server running securely");
-} catch (e) {
-    app.listen(process.env.PORT);
-    console.log("Server running insecurely");
-}
+app.listen(process.env.PORT);

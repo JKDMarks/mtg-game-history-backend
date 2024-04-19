@@ -27,13 +27,7 @@ exports.dialect = new kysely_1.MysqlDialect({
         },
     }),
 });
-const db = 
-// process.env.NODE_ENV === "production"
-//     ? createKysely<Database>({
-//           connectionString: process.env.DATABASE_URL,
-//       })
-//     :
-new kysely_1.Kysely({
+const db = new kysely_1.Kysely({
     dialect: exports.dialect,
 });
 exports.default = db;

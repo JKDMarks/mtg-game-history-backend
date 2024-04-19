@@ -15,8 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const cors_1 = __importDefault(require("cors"));
 const express_1 = __importDefault(require("express"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-const fs_1 = require("fs");
-const https_1 = __importDefault(require("https"));
 require("dotenv/config");
 const routes_1 = require("./routes");
 const helpers_1 = require("./utils/helpers");
@@ -44,18 +42,4 @@ app.get("/me", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 app.get("/test", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
     return res.status(200).send({ message: "hi! :^)" });
 }));
-try {
-    if (process.env.USE_HTTPS !== "true") {
-        throw new Error("Not using HTTPS");
-    }
-    const options = {
-        key: (0, fs_1.readFileSync)(process.env.HOME + "/certs/key.pem"),
-        cert: (0, fs_1.readFileSync)(process.env.HOME + "/certs/cert.pem"),
-    };
-    https_1.default.createServer(options, app).listen(process.env.PORT);
-    console.log("Server running securely");
-}
-catch (e) {
-    app.listen(process.env.PORT);
-    console.log("Server running insecurely");
-}
+app.listen(process.env.PORT);
