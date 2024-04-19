@@ -52,6 +52,81 @@ gamesRouter.get("/deck/:deckId", async (req, res) => {
     return res.json(games);
 });
 
+gamesRouter.post("/:gameId/edit", async (req, res) => {
+    const gameId = parseInt(req.params.gameId);
+    if (isNaN(gameId)) {
+        return res.status(404).json({ message: "Invalid game" });
+    }
+
+    const { notes, player_decks } = req.body;
+    const game = await findOneGame(Number(gameId));
+    if (!game || !game.id) {
+        return res.status(404).json({ message: "Invalid game" });
+    }
+    try {
+        await db.transaction().execute(async (trx) => {
+            await trx
+                .deleteFrom("game_player_decks")
+                .where("game_id", "=", gameId)
+                .execute();
+
+            const uniquePlayers = new Set();
+            const uniqueDecks = new Set();
+            for (let pd of player_decks) {
+                const { player_id, deck_id, is_winner } = pd;
+                const player = await findOnePlayer({
+                    playerId: player_id,
+                    userId: req.currentUser.id,
+                    includeDecks: false,
+                });
+                const deck = await findOneDeck({
+                    deckId: deck_id,
+                    userId: req.currentUser.id,
+                });
+                if (!player) {
+                    throw new Error(
+                        `Player id ${player_id} does not exist or is not associated with current user`
+                    );
+                }
+                if (!deck) {
+                    throw new Error(
+                        `Deck id ${deck_id} does not exist or is not associated with current user`
+                    );
+                }
+                await trx
+                    .insertInto("game_player_decks")
+                    .values({
+                        game_id: gameId,
+                        player_id: player.id,
+                        deck_id: deck.id,
+                        is_winner,
+                    })
+                    .executeTakeFirstOrThrow();
+                uniquePlayers.add(player_id);
+                uniqueDecks.add(deck_id);
+            }
+            if (
+                uniquePlayers.size < player_decks.length ||
+                uniqueDecks.size < player_decks.length
+            ) {
+                throw new Error("Non-unique players or decks");
+            }
+            if (notes) {
+                await trx
+                    .updateTable("games")
+                    .set({ notes })
+                    .where("id", "=", gameId)
+                    .execute();
+            }
+        });
+    } catch (e: unknown) {
+        return sendError(res, e);
+    }
+
+    const updatedGame = await findOneGame(gameId);
+    return res.json(updatedGame);
+});
+
 gamesRouter.post("/", async (req, res) => {
     const { notes, player_decks, date: _date } = req.body;
     const date = _date ?? moment().format("YYYY-MM-DD");

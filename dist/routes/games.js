@@ -56,6 +56,72 @@ gamesRouter.get("/deck/:deckId", (req, res) => __awaiter(void 0, void 0, void 0,
         });
     return res.json(games);
 }));
+gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const gameId = parseInt(req.params.gameId);
+    if (isNaN(gameId)) {
+        return res.status(404).json({ message: "Invalid game" });
+    }
+    const { notes, player_decks } = req.body;
+    const game = yield (0, games_1.findOneGame)(Number(gameId));
+    if (!game || !game.id) {
+        return res.status(404).json({ message: "Invalid game" });
+    }
+    try {
+        yield models_1.default.transaction().execute((trx) => __awaiter(void 0, void 0, void 0, function* () {
+            yield trx
+                .deleteFrom("game_player_decks")
+                .where("game_id", "=", gameId)
+                .execute();
+            const uniquePlayers = new Set();
+            const uniqueDecks = new Set();
+            for (let pd of player_decks) {
+                const { player_id, deck_id, is_winner } = pd;
+                const player = yield (0, players_1.findOnePlayer)({
+                    playerId: player_id,
+                    userId: req.currentUser.id,
+                    includeDecks: false,
+                });
+                const deck = yield (0, decks_1.findOneDeck)({
+                    deckId: deck_id,
+                    userId: req.currentUser.id,
+                });
+                if (!player) {
+                    throw new Error(`Player id ${player_id} does not exist or is not associated with current user`);
+                }
+                if (!deck) {
+                    throw new Error(`Deck id ${deck_id} does not exist or is not associated with current user`);
+                }
+                yield trx
+                    .insertInto("game_player_decks")
+                    .values({
+                    game_id: gameId,
+                    player_id: player.id,
+                    deck_id: deck.id,
+                    is_winner,
+                })
+                    .executeTakeFirstOrThrow();
+                uniquePlayers.add(player_id);
+                uniqueDecks.add(deck_id);
+            }
+            if (uniquePlayers.size < player_decks.length ||
+                uniqueDecks.size < player_decks.length) {
+                throw new Error("Non-unique players or decks");
+            }
+            if (notes) {
+                yield trx
+                    .updateTable("games")
+                    .set({ notes })
+                    .where("id", "=", gameId)
+                    .execute();
+            }
+        }));
+    }
+    catch (e) {
+        return (0, helpers_1.sendError)(res, e);
+    }
+    const updatedGame = yield (0, games_1.findOneGame)(gameId);
+    return res.json(updatedGame);
+}));
 gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { notes, player_decks, date: _date } = req.body;
     const date = _date !== null && _date !== void 0 ? _date : (0, moment_1.default)().format("YYYY-MM-DD");
