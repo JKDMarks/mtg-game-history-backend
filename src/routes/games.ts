@@ -60,9 +60,10 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
 
     const { notes, player_decks } = req.body;
     const game = await findOneGame(Number(gameId));
-    if (!game || !game.id) {
+    if (!game || !game.id || req.currentUser.id !== game.id) {
         return res.status(404).json({ message: "Invalid game" });
     }
+
     try {
         await db.transaction().execute(async (trx) => {
             await trx

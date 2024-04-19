@@ -63,7 +63,7 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
     }
     const { notes, player_decks } = req.body;
     const game = yield (0, games_1.findOneGame)(Number(gameId));
-    if (!game || !game.id) {
+    if (!game || !game.id || req.currentUser.id !== game.id) {
         return res.status(404).json({ message: "Invalid game" });
     }
     try {
