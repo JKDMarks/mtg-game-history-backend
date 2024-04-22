@@ -36,7 +36,7 @@ const path = __importStar(require("path"));
 const fs_1 = require("fs");
 const kysely_1 = require("kysely");
 const models_1 = require("../models");
-function migrateDownAll() {
+function migrateDown(numMigrations) {
     return __awaiter(this, void 0, void 0, function* () {
         const db = new kysely_1.Kysely({
             dialect: models_1.dialect,
@@ -49,19 +49,29 @@ function migrateDownAll() {
                 migrationFolder: path.join(__dirname, "../migrations"),
             }),
         });
-        let results = [null];
-        while (results && results.length > 0) {
-            const nextMigration = yield migrator.migrateDown();
-            if (nextMigration.results != undefined) {
-                results = nextMigration.results;
-                console.log(results);
+        if (numMigrations) {
+            while (numMigrations > 0) {
+                const nextMigration = yield migrator.migrateDown();
+                console.log(nextMigration);
+                numMigrations--;
             }
-            else {
-                console.log(nextMigration.error);
-                results = [];
+        }
+        else {
+            let results = [null];
+            while (results && results.length > 0) {
+                const nextMigration = yield migrator.migrateDown();
+                if (nextMigration.results != undefined) {
+                    results = nextMigration.results;
+                    console.log(results);
+                }
+                else {
+                    console.log(nextMigration.error);
+                    results = [];
+                }
             }
         }
         yield db.destroy();
     });
 }
-migrateDownAll();
+const numMigrations = Number(process.argv[2]);
+migrateDown(isNaN(numMigrations) ? undefined : numMigrations);

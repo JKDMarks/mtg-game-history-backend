@@ -8,6 +8,7 @@ import { GamesTable } from "./games";
 import { PlayersTable } from "./players";
 import { DecksTable } from "./decks";
 import { GamePlayerDecksTable } from "./game-player-decks";
+import { CardsTable } from "./cards";
 
 export interface Database {
     users: UsersTable;
@@ -15,6 +16,7 @@ export interface Database {
     players: PlayersTable;
     decks: DecksTable;
     game_player_decks: GamePlayerDecksTable;
+    cards: CardsTable;
 }
 
 export const env = process.env.NODE_ENV || "development";

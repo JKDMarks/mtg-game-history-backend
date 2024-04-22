@@ -18,6 +18,7 @@ const withGPDs = (eb: ExpressionBuilder<Database, "games">) => {
                 "game_player_decks.is_winner",
                 withPlayerFromGPD,
                 withDeck,
+                withCardsFromGPD,
             ])
             .whereRef("games.id", "=", "game_player_decks.game_id")
             .orderBy("id")
@@ -33,6 +34,17 @@ const withPlayerFromGPD = (
             .select(["players.id", "players.name"])
             .whereRef("players.id", "=", "game_player_decks.player_id")
     ).as("player");
+};
+
+const withCardsFromGPD = (
+    eb: ExpressionBuilder<Database, "game_player_decks">
+) => {
+    return jsonArrayFrom(
+        eb
+            .selectFrom("cards")
+            .select(["cards.name", "cards.turn_played"])
+            .whereRef("cards.game_player_deck_id", "=", "game_player_decks.id")
+    ).as("cards");
 };
 
 const withPlayerFromDeck = (eb: ExpressionBuilder<Database, "decks">) => {

@@ -60,17 +60,12 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
 
     const { notes, player_decks } = req.body;
     const game = await findOneGame(Number(gameId));
-    if (!game || !game.id || req.currentUser.id !== game.id) {
+    if (!game || !game.id || req.currentUser.id !== game.user_id) {
         return res.status(404).json({ message: "Invalid game" });
     }
 
     try {
         await db.transaction().execute(async (trx) => {
-            await trx
-                .deleteFrom("game_player_decks")
-                .where("game_id", "=", gameId)
-                .execute();
-
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
@@ -95,16 +90,29 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
                     );
                 }
                 await trx
-                    .insertInto("game_player_decks")
-                    .values({
+                    .updateTable("game_player_decks")
+                    .set({
                         game_id: gameId,
                         player_id: player.id,
                         deck_id: deck.id,
                         is_winner,
                     })
-                    .executeTakeFirstOrThrow();
-                uniquePlayers.add(player_id);
-                uniqueDecks.add(deck_id);
+                    .where("game_player_decks.id", "=", pd.id)
+                    .execute();
+                uniquePlayers.add(player.id);
+                uniqueDecks.add(deck.id);
+
+                const values = pd.cards.map((card: any) => ({
+                    ...card,
+                    game_player_deck_id: pd.id,
+                }));
+                await trx
+                    .deleteFrom("cards")
+                    .where("cards.game_player_deck_id", "=", pd.id)
+                    .execute();
+                if (values.length > 0) {
+                    await trx.insertInto("cards").values(values).execute();
+                }
             }
             if (
                 uniquePlayers.size < player_decks.length ||
@@ -165,7 +173,7 @@ gamesRouter.post("/", async (req, res) => {
                         `Deck id ${deck_id} does not exist or is not associated with current user`
                     );
                 }
-                await trx
+                const newGpd = await trx
                     .insertInto("game_player_decks")
                     .values({
                         game_id: newGameId,
@@ -176,6 +184,15 @@ gamesRouter.post("/", async (req, res) => {
                     .executeTakeFirstOrThrow();
                 uniquePlayers.add(player_id);
                 uniqueDecks.add(deck_id);
+
+                const newGpdId = Number(newGpd.insertId);
+                const values = pd.cards.map((card: any) => ({
+                    ...card,
+                    game_player_deck_id: newGpdId,
+                }));
+                if (values.length > 0) {
+                    await trx.insertInto("cards").values(values).execute();
+                }
             }
             if (
                 uniquePlayers.size < player_decks.length ||

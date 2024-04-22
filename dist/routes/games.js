@@ -63,15 +63,11 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
     }
     const { notes, player_decks } = req.body;
     const game = yield (0, games_1.findOneGame)(Number(gameId));
-    if (!game || !game.id || req.currentUser.id !== game.id) {
+    if (!game || !game.id || req.currentUser.id !== game.user_id) {
         return res.status(404).json({ message: "Invalid game" });
     }
     try {
         yield models_1.default.transaction().execute((trx) => __awaiter(void 0, void 0, void 0, function* () {
-            yield trx
-                .deleteFrom("game_player_decks")
-                .where("game_id", "=", gameId)
-                .execute();
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
@@ -92,16 +88,25 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
                     throw new Error(`Deck id ${deck_id} does not exist or is not associated with current user`);
                 }
                 yield trx
-                    .insertInto("game_player_decks")
-                    .values({
+                    .updateTable("game_player_decks")
+                    .set({
                     game_id: gameId,
                     player_id: player.id,
                     deck_id: deck.id,
                     is_winner,
                 })
-                    .executeTakeFirstOrThrow();
-                uniquePlayers.add(player_id);
-                uniqueDecks.add(deck_id);
+                    .where("game_player_decks.id", "=", pd.id)
+                    .execute();
+                uniquePlayers.add(player.id);
+                uniqueDecks.add(deck.id);
+                const values = pd.cards.map((card) => (Object.assign(Object.assign({}, card), { game_player_deck_id: pd.id })));
+                yield trx
+                    .deleteFrom("cards")
+                    .where("cards.game_player_deck_id", "=", pd.id)
+                    .execute();
+                if (values.length > 0) {
+                    yield trx.insertInto("cards").values(values).execute();
+                }
             }
             if (uniquePlayers.size < player_decks.length ||
                 uniqueDecks.size < player_decks.length) {
@@ -152,7 +157,7 @@ gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 if (!deck) {
                     throw new Error(`Deck id ${deck_id} does not exist or is not associated with current user`);
                 }
-                yield trx
+                const newGpd = yield trx
                     .insertInto("game_player_decks")
                     .values({
                     game_id: newGameId,
@@ -163,6 +168,11 @@ gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
                     .executeTakeFirstOrThrow();
                 uniquePlayers.add(player_id);
                 uniqueDecks.add(deck_id);
+                const newGpdId = Number(newGpd.insertId);
+                const values = pd.cards.map((card) => (Object.assign(Object.assign({}, card), { game_player_deck_id: newGpdId })));
+                if (values.length > 0) {
+                    yield trx.insertInto("cards").values(values).execute();
+                }
             }
             if (uniquePlayers.size < player_decks.length ||
                 uniqueDecks.size < player_decks.length) {
