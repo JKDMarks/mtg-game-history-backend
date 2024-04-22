@@ -84,7 +84,7 @@ authRouter.post("/signup", async (req, res) => {
         const insertQueryResult = await createUser({
             username,
             password_hash: passwordHash,
-            user_level: USER_LEVEL.RESTRICTED,
+            user_level: USER_LEVEL.REGULAR_USER,
         });
         const newUser = await findUserById(Number(insertQueryResult.insertId));
         if (!newUser) {
