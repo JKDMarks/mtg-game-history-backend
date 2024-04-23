@@ -1,6 +1,12 @@
 import { Router } from "express";
-import { createDeck, findAllDecks, findOneDeck } from "../models/decks";
+import {
+    createDeck,
+    findAllDecks,
+    findOneDeck,
+    selectDeckCount,
+} from "../models/decks";
 import { sendError } from "../utils/helpers";
+import { USER_LEVEL } from "../utils/constants";
 
 const decksRouter = Router();
 
@@ -17,6 +23,16 @@ decksRouter.get("/:deckId", async (req, res) => {
 });
 
 decksRouter.post("/", async (req, res) => {
+    if (req.currentUser.user_level === USER_LEVEL.RESTRICTED) {
+        const queryResult = await selectDeckCount(req.currentUser.id);
+        if (queryResult !== undefined && Number(queryResult?.deck_count) >= 4) {
+            return res.status(401).json({
+                message:
+                    "New users cannot create more than 4 decks. Please go to your profile page and complete your signup to add more decks.",
+            });
+        }
+    }
+
     const { name, player_id } = req.body;
     try {
         const insertQueryResult = await createDeck(

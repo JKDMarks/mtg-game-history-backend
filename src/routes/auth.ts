@@ -1,18 +1,26 @@
-import { CookieOptions, Router } from "express";
+import { Router } from "express";
 import bcrypt from "bcryptjs";
 
-import { CLIENT_COOKIE_KEY, USER_LEVEL } from "../utils/constants";
-import { encrypt, sendError } from "../utils/helpers";
-import { createUser, findUserById, findUserByUsername } from "../models/users";
+import {
+    CLIENT_COOKIE_KEY,
+    COOKIE_OPTIONS,
+    USER_LEVEL,
+    USERNAME_RGX,
+} from "../utils/constants";
+import {
+    encrypt,
+    getUserFromCookiesOrThrow,
+    sendError,
+} from "../utils/helpers";
+import {
+    createUser,
+    findUserById,
+    findUserByUsername,
+    updateUser,
+} from "../models/users";
 
 const FALLBACK_MSG =
     "No user found with that username, or username and password don't match";
-
-const cookieOptions: CookieOptions = {
-    secure: true,
-    httpOnly: true,
-    sameSite: "none",
-};
 
 const authRouter = Router();
 
@@ -44,7 +52,7 @@ authRouter.post("/login", async (req, res) => {
             const date = new Date();
             date.setDate(date.getDate() + 30);
             res.cookie(CLIENT_COOKIE_KEY, encrypt({ userId: user.id }), {
-                ...cookieOptions,
+                ...COOKIE_OPTIONS,
                 expires: date,
             });
             return res.send({ loggedIn: true });
@@ -61,7 +69,7 @@ authRouter.post("/login", async (req, res) => {
 });
 
 authRouter.post("/signup", async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, user_level } = req.body;
     if (
         !username ||
         !password ||
@@ -73,8 +81,8 @@ authRouter.post("/signup", async (req, res) => {
             .send({ message: "Missing username or password" });
     }
 
-    const validUsername = username.match(/^[a-z0-9_]{1,20}$/i);
-    if (!validUsername) {
+    const isValidUsername = username.match(USERNAME_RGX);
+    if (!isValidUsername) {
         return res.status(401).send({ message: "Invalid username" });
     }
 
@@ -84,7 +92,7 @@ authRouter.post("/signup", async (req, res) => {
         const insertQueryResult = await createUser({
             username,
             password_hash: passwordHash,
-            user_level: USER_LEVEL.REGULAR_USER,
+            user_level: user_level ?? USER_LEVEL.REGULAR_USER,
         });
         const newUser = await findUserById(Number(insertQueryResult.insertId));
         if (!newUser) {
@@ -94,13 +102,70 @@ authRouter.post("/signup", async (req, res) => {
         const date = new Date();
         date.setDate(date.getDate() + 30);
         res.cookie(CLIENT_COOKIE_KEY, encrypt({ userId: newUser.id }), {
-            ...cookieOptions,
+            ...COOKIE_OPTIONS,
             expires: date,
         });
         return res.send({ loggedIn: true });
     } catch (e) {
         return sendError(res, e);
     }
+});
+
+authRouter.post("/update", async (req, res, ___) => {
+    const user = await getUserFromCookiesOrThrow(req, true);
+    const { username, password, prev_password } = req.body;
+
+    if (!username && !password) {
+        return res.status(400).json({ message: "No updates provided" });
+    }
+
+    if (username) {
+        const isValidUsername = username.match(USERNAME_RGX);
+        if (!isValidUsername) {
+            return res.status(400).json({ message: "Invalid username" });
+        }
+    }
+
+    let newPasswordHash;
+    if (password && prev_password) {
+        const isValidPassword = password.length >= 8;
+        if (!isValidPassword) {
+            return res.status(400).json({ message: "Invalid password" });
+        }
+        const doesPasswordMatch = bcrypt.compareSync(
+            prev_password,
+            user.password_hash
+        );
+        if (!doesPasswordMatch) {
+            return res.status(400).json({
+                message: "Entered value doesn't match current password",
+            });
+        }
+        const salt = bcrypt.genSaltSync(10);
+        newPasswordHash = bcrypt.hashSync(password, salt);
+    }
+
+    let userLevel;
+    if (user.user_level === USER_LEVEL.RESTRICTED) {
+        if (!password) {
+            return res
+                .status(400)
+                .json({ message: "Please provide an updated password" });
+        }
+        userLevel = USER_LEVEL.REGULAR_USER;
+    }
+
+    const queryResult = await updateUser({
+        userId: user.id,
+        username,
+        passwordHash: newPasswordHash,
+        userLevel,
+    });
+    if (Number(queryResult.numUpdatedRows) === 1) {
+        return res.json({ success: true });
+    }
+
+    return res.json({ message: "Update unsuccessful" });
 });
 
 authRouter.get("/logout", async (_, res) => {

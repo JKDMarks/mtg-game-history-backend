@@ -62,3 +62,13 @@ export const createDeck = (
         .values({ name, player_id, user_id })
         .executeTakeFirst();
 };
+
+export const selectDeckCount = async (currUserId: number) => {
+    return await db
+        .selectFrom("decks")
+        .select(({ eb }: { eb: ExpressionBuilder<Database, "decks"> }) =>
+            eb.fn.count("decks.id").as("deck_count")
+        )
+        .where("user_id", "=", currUserId)
+        .executeTakeFirst();
+};

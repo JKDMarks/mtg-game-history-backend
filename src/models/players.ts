@@ -69,3 +69,13 @@ export const createPlayer = (name: string, userId: number) => {
         .values({ name, user_id: userId })
         .executeTakeFirst();
 };
+
+export const selectPlayerCount = async (currUserId: number) => {
+    return await db
+        .selectFrom("players")
+        .select(({ eb }: { eb: ExpressionBuilder<Database, "players"> }) =>
+            eb.fn.count("players.id").as("player_count")
+        )
+        .where("user_id", "=", currUserId)
+        .executeTakeFirst();
+};

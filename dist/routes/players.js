@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const players_1 = require("../models/players");
 const helpers_1 = require("../utils/helpers");
+const constants_1 = require("../utils/constants");
 const playersRouter = (0, express_1.Router)();
 playersRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const players = yield (0, players_1.findAllPlayers)(req.currentUser.id);
@@ -23,6 +24,15 @@ playersRouter.get("/:playerId", (req, res) => __awaiter(void 0, void 0, void 0, 
     return res.json(player);
 }));
 playersRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.currentUser.user_level === constants_1.USER_LEVEL.RESTRICTED) {
+        const queryResult = yield (0, players_1.selectPlayerCount)(req.currentUser.id);
+        if (queryResult !== undefined &&
+            Number(queryResult === null || queryResult === void 0 ? void 0 : queryResult.player_count) >= 4) {
+            return res.status(401).json({
+                message: "New users cannot create more than 4 players",
+            });
+        }
+    }
     const { name } = req.body;
     try {
         const insertQueryResult = yield (0, players_1.createPlayer)(name, req.currentUser.id);

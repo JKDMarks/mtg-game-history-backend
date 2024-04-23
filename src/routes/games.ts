@@ -1,10 +1,16 @@
 import { Router } from "express";
-import { findAllGames, findMostRecentGame, findOneGame } from "../models/games";
+import {
+    findAllGames,
+    findMostRecentGame,
+    findOneGame,
+    selectGameCount,
+} from "../models/games";
 import moment from "moment";
 import db from "../models";
 import { sendError } from "../utils/helpers";
 import { findOnePlayer } from "../models/players";
 import { findOneDeck } from "../models/decks";
+import { USER_LEVEL } from "../utils/constants";
 
 const gamesRouter = Router();
 
@@ -137,6 +143,16 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
 });
 
 gamesRouter.post("/", async (req, res) => {
+    if (req.currentUser.user_level === USER_LEVEL.RESTRICTED) {
+        const queryResult = await selectGameCount(req.currentUser.id);
+        if (queryResult !== undefined && Number(queryResult?.game_count) >= 2) {
+            return res.status(401).json({
+                message:
+                    "New users cannot create more than 2 games. Please go to your profile page and complete your signup to add more games.",
+            });
+        }
+    }
+
     const { notes, player_decks, date: _date } = req.body;
     const date = _date ?? moment().format("YYYY-MM-DD");
     let newGameId = null;

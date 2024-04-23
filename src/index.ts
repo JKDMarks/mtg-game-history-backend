@@ -4,7 +4,11 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 
 import { auth, games, players, users } from "./routes";
-import { checkAuthCookie, setHeaders } from "./utils/helpers";
+import {
+    autoSignupOnPostReq,
+    checkAuthCookie,
+    setHeaders,
+} from "./utils/helpers";
 import decks from "./routes/decks";
 
 const app = express();
@@ -18,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+app.use(autoSignupOnPostReq);
 app.use(checkAuthCookie);
 app.use(setHeaders);
 // app.use(disallowRestrictedUsers);

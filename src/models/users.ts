@@ -18,12 +18,24 @@ export const nonsensitiveUserColumns: ReadonlyArray<keyof UsersTable> = [
     "user_level",
 ];
 
-export const findUserById = async (id: number) =>
-    await db
-        .selectFrom("users")
-        .select(nonsensitiveUserColumns)
-        .where("id", "=", id)
-        .executeTakeFirst();
+export const findUserById = async (
+    id: number,
+    includePassword: boolean = false
+) => {
+    if (includePassword) {
+        return db
+            .selectFrom("users")
+            .selectAll("users")
+            .where("id", "=", id)
+            .executeTakeFirst();
+    } else {
+        return db
+            .selectFrom("users")
+            .select(nonsensitiveUserColumns)
+            .where("id", "=", id)
+            .executeTakeFirst();
+    }
+};
 
 export const findUserByUsername = async (username: string) =>
     await db
@@ -45,4 +57,32 @@ export const createUser = async ({
         .insertInto("users")
         .values({ username, password_hash, user_level })
         .executeTakeFirst();
+};
+
+export const updateUser = async ({
+    userId,
+    username,
+    passwordHash,
+    userLevel,
+}: {
+    userId: number;
+    username?: string;
+    passwordHash?: string;
+    userLevel?: number;
+}) => {
+    let query = db.updateTable("users").where("id", "=", userId);
+
+    if (username) {
+        query = query.set({ username });
+    }
+
+    if (passwordHash) {
+        query = query.set({ password_hash: passwordHash });
+    }
+
+    if (userLevel) {
+        query = query.set({ user_level: userLevel });
+    }
+
+    return await query.executeTakeFirst();
 };

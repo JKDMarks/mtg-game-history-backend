@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createPlayer = exports.findOnePlayer = exports.findAllPlayers = void 0;
+exports.selectPlayerCount = exports.createPlayer = exports.findOnePlayer = exports.findAllPlayers = void 0;
 const _1 = __importDefault(require("."));
 const mysql_1 = require("kysely/helpers/mysql");
 const withDecks = (eb) => {
@@ -57,3 +57,11 @@ const createPlayer = (name, userId) => {
         .executeTakeFirst();
 };
 exports.createPlayer = createPlayer;
+const selectPlayerCount = (currUserId) => __awaiter(void 0, void 0, void 0, function* () {
+    return yield _1.default
+        .selectFrom("players")
+        .select(({ eb }) => eb.fn.count("players.id").as("player_count"))
+        .where("user_id", "=", currUserId)
+        .executeTakeFirst();
+});
+exports.selectPlayerCount = selectPlayerCount;

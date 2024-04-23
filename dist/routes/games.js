@@ -19,6 +19,7 @@ const models_1 = __importDefault(require("../models"));
 const helpers_1 = require("../utils/helpers");
 const players_1 = require("../models/players");
 const decks_1 = require("../models/decks");
+const constants_1 = require("../utils/constants");
 const gamesRouter = (0, express_1.Router)();
 gamesRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const games = yield (0, games_1.findAllGames)({ userId: req.currentUser.id });
@@ -128,6 +129,14 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
     return res.json(updatedGame);
 }));
 gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.currentUser.user_level === constants_1.USER_LEVEL.RESTRICTED) {
+        const queryResult = yield (0, games_1.selectGameCount)(req.currentUser.id);
+        if (queryResult !== undefined && Number(queryResult === null || queryResult === void 0 ? void 0 : queryResult.game_count) >= 2) {
+            return res.status(401).json({
+                message: "New users cannot create more than 2 games. Please go to your profile page and complete your signup to add more games.",
+            });
+        }
+    }
     const { notes, player_decks, date: _date } = req.body;
     const date = _date !== null && _date !== void 0 ? _date : (0, moment_1.default)().format("YYYY-MM-DD");
     let newGameId = null;

@@ -1,7 +1,13 @@
 import { Router } from "express";
 
-import { createPlayer, findAllPlayers, findOnePlayer } from "../models/players";
+import {
+    createPlayer,
+    findAllPlayers,
+    findOnePlayer,
+    selectPlayerCount,
+} from "../models/players";
 import { sendError } from "../utils/helpers";
+import { USER_LEVEL } from "../utils/constants";
 
 const playersRouter = Router();
 
@@ -18,6 +24,18 @@ playersRouter.get("/:playerId", async (req, res) => {
 });
 
 playersRouter.post("/", async (req, res) => {
+    if (req.currentUser.user_level === USER_LEVEL.RESTRICTED) {
+        const queryResult = await selectPlayerCount(req.currentUser.id);
+        if (
+            queryResult !== undefined &&
+            Number(queryResult?.player_count) >= 4
+        ) {
+            return res.status(401).json({
+                message: "New users cannot create more than 4 players",
+            });
+        }
+    }
+
     const { name } = req.body;
     try {
         const insertQueryResult = await createPlayer(name, req.currentUser.id);

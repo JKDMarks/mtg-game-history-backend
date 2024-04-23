@@ -128,3 +128,13 @@ export const findMostRecentGame = async (userId: number) => {
         .orderBy("id", "desc")
         .executeTakeFirst();
 };
+
+export const selectGameCount = async (currUserId: number) => {
+    return await db
+        .selectFrom("games")
+        .select(({ eb }: { eb: ExpressionBuilder<Database, "games"> }) =>
+            eb.fn.count("games.id").as("game_count")
+        )
+        .where("user_id", "=", currUserId)
+        .executeTakeFirst();
+};

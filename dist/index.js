@@ -28,6 +28,7 @@ app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
+app.use(helpers_1.autoSignupOnPostReq);
 app.use(helpers_1.checkAuthCookie);
 app.use(helpers_1.setHeaders);
 // app.use(disallowRestrictedUsers);
