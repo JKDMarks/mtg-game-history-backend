@@ -112,7 +112,12 @@ authRouter.post("/signup", async (req, res) => {
 });
 
 authRouter.post("/update", async (req, res, ___) => {
-    const user = await getUserFromCookiesOrThrow(req, true);
+    let user;
+    try {
+        user = await getUserFromCookiesOrThrow(req, true);
+    } catch (e) {
+        return sendError(res, e);
+    }
     const { username, password, prev_password } = req.body;
 
     if (!username && !password) {

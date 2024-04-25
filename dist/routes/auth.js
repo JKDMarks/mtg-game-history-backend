@@ -90,7 +90,13 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
     }
 }));
 authRouter.post("/update", (req, res, ___) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield (0, helpers_1.getUserFromCookiesOrThrow)(req, true);
+    let user;
+    try {
+        user = yield (0, helpers_1.getUserFromCookiesOrThrow)(req, true);
+    }
+    catch (e) {
+        return (0, helpers_1.sendError)(res, e);
+    }
     const { username, password, prev_password } = req.body;
     if (!username && !password) {
         return res.status(400).json({ message: "No updates provided" });
