@@ -5,6 +5,7 @@ import {
     findAllPlayers,
     findOnePlayer,
     selectPlayerCount,
+    updatePlayer,
 } from "../models/players";
 import { sendError } from "../utils/helpers";
 import { USER_LEVEL } from "../utils/constants";
@@ -44,6 +45,26 @@ playersRouter.post("/", async (req, res) => {
             includeDecks: false,
         });
         return res.send(newPlayer);
+    } catch (e) {
+        return sendError(res, e);
+    }
+});
+
+playersRouter.post("/:playerId/edit", async (req, res) => {
+    const playerId = parseInt(req.params.playerId);
+    const player = await findOnePlayer({ playerId });
+
+    try {
+        if (!player || player.user_id !== req.currentUser.id) {
+            return res.status(401).json({ message: "Invalid player id" });
+        }
+        const queryResult = await updatePlayer({
+            playerId,
+            name: req.body.name,
+        });
+        if (Number(queryResult.numUpdatedRows) === 1) {
+            return res.json({ success: true });
+        }
     } catch (e) {
         return sendError(res, e);
     }

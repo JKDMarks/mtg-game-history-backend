@@ -4,6 +4,7 @@ import {
     findAllDecks,
     findOneDeck,
     selectDeckCount,
+    updateDeck,
 } from "../models/decks";
 import { sendError } from "../utils/helpers";
 import { USER_LEVEL } from "../utils/constants";
@@ -44,6 +45,23 @@ decksRouter.post("/", async (req, res) => {
             deckId: Number(insertQueryResult.insertId),
         });
         return res.send(newDeck);
+    } catch (e) {
+        return sendError(res, e);
+    }
+});
+
+decksRouter.post("/:deckId/edit", async (req, res) => {
+    const deckId = parseInt(req.params.deckId);
+    const deck = await findOneDeck({ deckId });
+
+    try {
+        if (!deck || deck.user_id !== req.currentUser.id) {
+            return res.status(401).json({ message: "Invalid deck id" });
+        }
+        const queryResult = await updateDeck({ deckId, name: req.body.name });
+        if (Number(queryResult.numUpdatedRows) === 1) {
+            return res.json({ success: true });
+        }
     } catch (e) {
         return sendError(res, e);
     }

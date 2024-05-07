@@ -72,3 +72,19 @@ export const selectDeckCount = async (currUserId: number) => {
         .where("user_id", "=", currUserId)
         .executeTakeFirst();
 };
+
+export const updateDeck = async ({
+    deckId,
+    name,
+}: {
+    deckId: number;
+    name?: string;
+}) => {
+    let query = db.updateTable("decks").where("id", "=", deckId);
+
+    if (name) {
+        query = query.set({ name });
+    }
+
+    return await query.executeTakeFirst();
+};

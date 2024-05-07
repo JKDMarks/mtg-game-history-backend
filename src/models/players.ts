@@ -79,3 +79,19 @@ export const selectPlayerCount = async (currUserId: number) => {
         .where("user_id", "=", currUserId)
         .executeTakeFirst();
 };
+
+export const updatePlayer = async ({
+    playerId,
+    name,
+}: {
+    playerId: number;
+    name?: string;
+}) => {
+    let query = db.updateTable("players").where("id", "=", playerId);
+
+    if (name) {
+        query = query.set({ name });
+    }
+
+    return await query.executeTakeFirst();
+};

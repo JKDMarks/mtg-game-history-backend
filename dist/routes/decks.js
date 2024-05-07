@@ -44,4 +44,20 @@ decksRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return (0, helpers_1.sendError)(res, e);
     }
 }));
+decksRouter.post("/:deckId/edit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const deckId = parseInt(req.params.deckId);
+    const deck = yield (0, decks_1.findOneDeck)({ deckId });
+    try {
+        if (!deck || deck.user_id !== req.currentUser.id) {
+            return res.status(401).json({ message: "Invalid deck id" });
+        }
+        const queryResult = yield (0, decks_1.updateDeck)({ deckId, name: req.body.name });
+        if (Number(queryResult.numUpdatedRows) === 1) {
+            return res.json({ success: true });
+        }
+    }
+    catch (e) {
+        return (0, helpers_1.sendError)(res, e);
+    }
+}));
 exports.default = decksRouter;

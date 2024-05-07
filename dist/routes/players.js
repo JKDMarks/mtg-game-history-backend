@@ -46,4 +46,23 @@ playersRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function
         return (0, helpers_1.sendError)(res, e);
     }
 }));
+playersRouter.post("/:playerId/edit", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const playerId = parseInt(req.params.playerId);
+    const player = yield (0, players_1.findOnePlayer)({ playerId });
+    try {
+        if (!player || player.user_id !== req.currentUser.id) {
+            return res.status(401).json({ message: "Invalid player id" });
+        }
+        const queryResult = yield (0, players_1.updatePlayer)({
+            playerId,
+            name: req.body.name,
+        });
+        if (Number(queryResult.numUpdatedRows) === 1) {
+            return res.json({ success: true });
+        }
+    }
+    catch (e) {
+        return (0, helpers_1.sendError)(res, e);
+    }
+}));
 exports.default = playersRouter;
