@@ -88,3 +88,17 @@ export const updateDeck = async ({
 
     return await query.executeTakeFirst();
 };
+
+export const selectDeckCards = async ({ deckId }: { deckId: number }) => {
+    const cardNames = await db
+        .selectFrom("decks")
+        .innerJoin("game_player_decks", "game_player_decks.deck_id", "decks.id")
+        .innerJoin("cards", "cards.game_player_deck_id", "game_player_decks.id")
+        .select("cards.name")
+        .where("decks.id", "=", deckId)
+        .orderBy("cards.name")
+        .distinct()
+        .execute();
+
+    return cardNames.map((obj) => obj.name);
+};

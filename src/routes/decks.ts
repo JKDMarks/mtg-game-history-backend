@@ -3,6 +3,7 @@ import {
     createDeck,
     findAllDecks,
     findOneDeck,
+    selectDeckCards,
     selectDeckCount,
     updateDeck,
 } from "../models/decks";
@@ -18,9 +19,17 @@ decksRouter.get("/", async (req, res) => {
 });
 
 decksRouter.get("/:deckId", async (req, res) => {
-    const deckId = parseInt(req.params.deckId);
-    const player = await findOneDeck({ deckId });
-    return res.json(player);
+    try {
+        const deckId = parseInt(req.params.deckId);
+        const deck = await findOneDeck({ deckId });
+        if (!deck) {
+            throw new Error("No deck found");
+        }
+        const deckCards = await selectDeckCards({ deckId: deck.id });
+        return res.json({ ...deck, cards: deckCards });
+    } catch (e) {
+        return sendError(res, e);
+    }
 });
 
 decksRouter.post("/", async (req, res) => {

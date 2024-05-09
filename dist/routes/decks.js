@@ -19,9 +19,18 @@ decksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     res.json(players);
 }));
 decksRouter.get("/:deckId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const deckId = parseInt(req.params.deckId);
-    const player = yield (0, decks_1.findOneDeck)({ deckId });
-    return res.json(player);
+    try {
+        const deckId = parseInt(req.params.deckId);
+        const deck = yield (0, decks_1.findOneDeck)({ deckId });
+        if (!deck) {
+            throw new Error("No deck found");
+        }
+        const deckCards = yield (0, decks_1.selectDeckCards)({ deckId: deck.id });
+        return res.json(Object.assign(Object.assign({}, deck), { cards: deckCards }));
+    }
+    catch (e) {
+        return (0, helpers_1.sendError)(res, e);
+    }
 }));
 decksRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.currentUser.user_level === constants_1.USER_LEVEL.RESTRICTED) {

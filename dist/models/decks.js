@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateDeck = exports.selectDeckCount = exports.createDeck = exports.findAllDecks = exports.findOneDeck = void 0;
+exports.selectDeckCards = exports.updateDeck = exports.selectDeckCount = exports.createDeck = exports.findAllDecks = exports.findOneDeck = void 0;
 const _1 = __importDefault(require("."));
 const mysql_1 = require("kysely/helpers/mysql");
 const withPlayer = (eb) => {
@@ -68,3 +68,16 @@ const updateDeck = (_b) => __awaiter(void 0, [_b], void 0, function* ({ deckId, 
     return yield query.executeTakeFirst();
 });
 exports.updateDeck = updateDeck;
+const selectDeckCards = (_c) => __awaiter(void 0, [_c], void 0, function* ({ deckId }) {
+    const cardNames = yield _1.default
+        .selectFrom("decks")
+        .innerJoin("game_player_decks", "game_player_decks.deck_id", "decks.id")
+        .innerJoin("cards", "cards.game_player_deck_id", "game_player_decks.id")
+        .select("cards.name")
+        .where("decks.id", "=", deckId)
+        .orderBy("cards.name")
+        .distinct()
+        .execute();
+    return cardNames.map((obj) => obj.name);
+});
+exports.selectDeckCards = selectDeckCards;
