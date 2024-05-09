@@ -33,7 +33,7 @@ playersRouter.post("/", async (req, res) => {
         ) {
             return res.status(401).json({
                 message:
-                    "New users cannot create more than 4 players. Go to your profile page and complete your signup to add more games.",
+                    "New users cannot create more than 4 players. Go to your profile page and complete your signup to add more players.",
             });
         }
     }
