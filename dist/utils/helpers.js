@@ -46,7 +46,7 @@ const sendError = (res, e, errorCode = 500) => {
 };
 exports.sendError = sendError;
 const autoSignupOnPostReq = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    if (req.method === "POST") {
+    if (req.method === "POST" && !req.path.startsWith("/auth")) {
         try {
             const { [constants_1.CLIENT_COOKIE_KEY]: authCookieValue } = req.cookies;
             if (!authCookieValue) {

@@ -38,7 +38,7 @@ export const sendError = (
 };
 
 export const autoSignupOnPostReq: RequestHandler = async (req, res, next) => {
-    if (req.method === "POST") {
+    if (req.method === "POST" && !req.path.startsWith("/auth")) {
         try {
             const { [CLIENT_COOKIE_KEY]: authCookieValue } = req.cookies;
             if (!authCookieValue) {
