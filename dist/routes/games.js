@@ -133,7 +133,7 @@ gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
         const queryResult = yield (0, games_1.selectGameCount)(req.currentUser.id);
         if (queryResult !== undefined && Number(queryResult === null || queryResult === void 0 ? void 0 : queryResult.game_count) >= 2) {
             return res.status(401).json({
-                message: "New users cannot create more than 2 games. Please go to your profile page and complete your signup to add more games.",
+                message: "New users cannot create more than 2 games. Go to your profile page and complete your signup to add more games.",
             });
         }
     }

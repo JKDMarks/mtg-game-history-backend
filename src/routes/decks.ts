@@ -29,7 +29,7 @@ decksRouter.post("/", async (req, res) => {
         if (queryResult !== undefined && Number(queryResult?.deck_count) >= 4) {
             return res.status(401).json({
                 message:
-                    "New users cannot create more than 4 decks. Please go to your profile page and complete your signup to add more decks.",
+                    "New users cannot create more than 4 decks. Go to your profile page and complete your signup to add more decks.",
             });
         }
     }

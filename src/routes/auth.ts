@@ -155,7 +155,7 @@ authRouter.post("/update", async (req, res, ___) => {
         if (!password) {
             return res
                 .status(400)
-                .json({ message: "Please provide an updated password" });
+                .json({ message: "Provide an updated password" });
         }
         userLevel = USER_LEVEL.REGULAR_USER;
     }

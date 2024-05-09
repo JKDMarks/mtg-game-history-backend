@@ -127,7 +127,7 @@ authRouter.post("/update", (req, res, ___) => __awaiter(void 0, void 0, void 0, 
         if (!password) {
             return res
                 .status(400)
-                .json({ message: "Please provide an updated password" });
+                .json({ message: "Provide an updated password" });
         }
         userLevel = constants_1.USER_LEVEL.REGULAR_USER;
     }

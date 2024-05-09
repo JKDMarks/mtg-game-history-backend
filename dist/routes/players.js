@@ -29,7 +29,7 @@ playersRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function
         if (queryResult !== undefined &&
             Number(queryResult === null || queryResult === void 0 ? void 0 : queryResult.player_count) >= 4) {
             return res.status(401).json({
-                message: "New users cannot create more than 4 players",
+                message: "New users cannot create more than 4 players. Go to your profile page and complete your signup to add more games.",
             });
         }
     }
