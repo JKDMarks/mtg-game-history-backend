@@ -173,9 +173,9 @@ authRouter.post("/update", async (req, res, ___) => {
     return res.json({ message: "Update unsuccessful" });
 });
 
-authRouter.get("/logout", async (_, res) => {
+authRouter.post("/logout", async (_, res) => {
     res.clearCookie(CLIENT_COOKIE_KEY, { ...COOKIE_OPTIONS });
-    res.send({ loggedIn: false });
+    res.status(200).send({ loggedIn: false });
 });
 
 export default authRouter;
