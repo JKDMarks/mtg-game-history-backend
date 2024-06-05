@@ -143,7 +143,7 @@ authRouter.post("/update", (req, res, ___) => __awaiter(void 0, void 0, void 0, 
     return res.json({ message: "Update unsuccessful" });
 }));
 authRouter.get("/logout", (_, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.clearCookie(constants_1.CLIENT_COOKIE_KEY, { httpOnly: true });
+    res.clearCookie(constants_1.CLIENT_COOKIE_KEY, Object.assign({}, constants_1.COOKIE_OPTIONS));
     res.send({ loggedIn: false });
 }));
 exports.default = authRouter;

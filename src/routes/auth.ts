@@ -174,7 +174,7 @@ authRouter.post("/update", async (req, res, ___) => {
 });
 
 authRouter.get("/logout", async (_, res) => {
-    res.clearCookie(CLIENT_COOKIE_KEY, { httpOnly: true });
+    res.clearCookie(CLIENT_COOKIE_KEY, { ...COOKIE_OPTIONS });
     res.send({ loggedIn: false });
 });
 
