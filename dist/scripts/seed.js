@@ -18,6 +18,7 @@ const _20240328154113_seed_players_1 = __importDefault(require("../seeders/20240
 const _20240328160810_seed_decks_1 = __importDefault(require("../seeders/20240328160810-seed-decks"));
 const _20240328160912_seed_games_1 = __importDefault(require("../seeders/20240328160912-seed-games"));
 const _20240328161042_seed_game_player_decks_1 = __importDefault(require("../seeders/20240328161042-seed-game-player-decks"));
+// npx ts-node ./src/scripts/seed.ts
 const seedAll = () => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, _20240328151659_seed_users_1.default)(models_1.default);
     yield (0, _20240328154113_seed_players_1.default)(models_1.default);

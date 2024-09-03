@@ -36,6 +36,7 @@ const path = __importStar(require("path"));
 const fs_1 = require("fs");
 const kysely_1 = require("kysely");
 const models_1 = require("../models");
+// npx ts-node ./src/scripts/migrate.ts [number_of_undos]
 function migrateDown(numMigrations) {
     return __awaiter(this, void 0, void 0, function* () {
         const db = new kysely_1.Kysely({

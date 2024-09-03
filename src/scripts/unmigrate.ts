@@ -8,6 +8,8 @@ import {
 } from "kysely";
 import { Database, dialect } from "../models";
 
+// npx ts-node ./src/scripts/migrate.ts [number_of_undos]
+
 async function migrateDown(numMigrations?: number) {
     const db = new Kysely<Database>({
         dialect,

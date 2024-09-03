@@ -3,6 +3,8 @@ import { promises as fs } from "fs";
 import { Kysely, Migrator, FileMigrationProvider } from "kysely";
 import { Database, dialect } from "../models";
 
+// npx ts-node ./src/scripts/migrate.ts
+
 async function migrateToLatest() {
     const db = new Kysely<Database>({
         dialect,

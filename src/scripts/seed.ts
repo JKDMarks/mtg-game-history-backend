@@ -5,6 +5,8 @@ import seedDecks from "../seeders/20240328160810-seed-decks";
 import seedGames from "../seeders/20240328160912-seed-games";
 import seedGamePlayerDecks from "../seeders/20240328161042-seed-game-player-decks";
 
+// npx ts-node ./src/scripts/seed.ts
+
 const seedAll = async () => {
     await seedUsers(db);
     await seedPlayers(db);
