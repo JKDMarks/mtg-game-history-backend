@@ -21,6 +21,8 @@ const withGPDs = (eb) => {
         .select([
         "id",
         "game_player_decks.is_winner",
+        "game_player_decks.mulligan_count",
+        "game_player_decks.first_player",
         withPlayerFromGPD,
         withDeck,
         withCardsFromGPD,

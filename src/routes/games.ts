@@ -75,7 +75,13 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
-                const { player_id, deck_id, is_winner } = pd;
+                const {
+                    player_id,
+                    deck_id,
+                    is_winner,
+                    mulligan_count,
+                    first_player,
+                } = pd;
                 const player = await findOnePlayer({
                     playerId: player_id,
                     userId: req.currentUser.id,
@@ -102,6 +108,8 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
                         player_id: player.id,
                         deck_id: deck.id,
                         is_winner,
+                        mulligan_count,
+                        first_player,
                     })
                     .where("game_player_decks.id", "=", pd.id)
                     .execute();
@@ -170,7 +178,13 @@ gamesRouter.post("/", async (req, res) => {
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
-                const { player_id, deck_id, is_winner } = pd;
+                const {
+                    player_id,
+                    deck_id,
+                    is_winner,
+                    mulligan_count,
+                    first_player,
+                } = pd;
                 const player = await findOnePlayer({
                     playerId: player_id,
                     userId: req.currentUser.id,
@@ -197,6 +211,8 @@ gamesRouter.post("/", async (req, res) => {
                         player_id: player.id,
                         deck_id: deck.id,
                         is_winner,
+                        mulligan_count,
+                        first_player,
                     })
                     .executeTakeFirstOrThrow();
                 uniquePlayers.add(player_id);

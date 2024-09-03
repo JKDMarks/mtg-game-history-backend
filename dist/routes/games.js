@@ -72,7 +72,7 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
-                const { player_id, deck_id, is_winner } = pd;
+                const { player_id, deck_id, is_winner, mulligan_count, first_player, } = pd;
                 const player = yield (0, players_1.findOnePlayer)({
                     playerId: player_id,
                     userId: req.currentUser.id,
@@ -95,6 +95,8 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
                     player_id: player.id,
                     deck_id: deck.id,
                     is_winner,
+                    mulligan_count,
+                    first_player,
                 })
                     .where("game_player_decks.id", "=", pd.id)
                     .execute();
@@ -151,7 +153,7 @@ gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
             const uniquePlayers = new Set();
             const uniqueDecks = new Set();
             for (let pd of player_decks) {
-                const { player_id, deck_id, is_winner } = pd;
+                const { player_id, deck_id, is_winner, mulligan_count, first_player, } = pd;
                 const player = yield (0, players_1.findOnePlayer)({
                     playerId: player_id,
                     userId: req.currentUser.id,
@@ -174,6 +176,8 @@ gamesRouter.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* 
                     player_id: player.id,
                     deck_id: deck.id,
                     is_winner,
+                    mulligan_count,
+                    first_player,
                 })
                     .executeTakeFirstOrThrow();
                 uniquePlayers.add(player_id);

@@ -6,4 +6,6 @@ export interface GamePlayerDecksTable {
     game_id: number;
     player_id: number;
     deck_id: number;
+    mulligan_count: number | null;
+    first_player: boolean | null;
 }
