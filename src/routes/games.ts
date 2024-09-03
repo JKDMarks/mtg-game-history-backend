@@ -126,7 +126,7 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
             ) {
                 throw new Error("Non-unique players or decks");
             }
-            if (notes) {
+            if (notes !== null) {
                 await trx
                     .updateTable("games")
                     .set({ notes })

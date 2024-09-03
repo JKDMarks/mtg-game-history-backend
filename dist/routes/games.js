@@ -113,7 +113,7 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
                 uniqueDecks.size < player_decks.length) {
                 throw new Error("Non-unique players or decks");
             }
-            if (notes) {
+            if (notes !== null) {
                 yield trx
                     .updateTable("games")
                     .set({ notes })
