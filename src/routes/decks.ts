@@ -80,9 +80,18 @@ decksRouter.post("/:deckId/edit", async (req, res) => {
         if (!deck || deck.user_id !== req.currentUser.id) {
             return res.status(401).json({ message: "Invalid deck id" });
         }
-        const queryResult = await updateDeck({ deckId, name: req.body.name });
+        const queryResult = await updateDeck({
+            deckId,
+            name: req.body.name,
+            is_archived: req.body.is_archived,
+        });
         if (Number(queryResult.numUpdatedRows) === 1) {
-            return res.json({ success: true });
+            const deck = await findOneDeck({ deckId });
+            const playerId = deck?.player?.id;
+            return res.json({
+                success: true,
+                redirect: playerId ? `/players/${playerId}` : undefined,
+            });
         }
     } catch (e) {
         return sendError(res, e);

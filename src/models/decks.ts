@@ -28,7 +28,7 @@ export const findOneDeck = async ({
 }) => {
     let query = db
         .selectFrom("decks")
-        .select(["id", "user_id", "name"])
+        .select(["id", "user_id", "name", "is_archived"])
         .select(withPlayer)
         .where("decks.id", "=", deckId);
 
@@ -77,14 +77,20 @@ export const selectDeckCount = async (currUserId: number) => {
 export const updateDeck = async ({
     deckId,
     name,
+    is_archived,
 }: {
     deckId: number;
     name?: string;
+    is_archived?: boolean;
 }) => {
     let query = db.updateTable("decks").where("id", "=", deckId);
 
     if (name) {
         query = query.set({ name });
+    }
+
+    if (is_archived !== undefined) {
+        query = query.set({ is_archived });
     }
 
     return await query.executeTakeFirst();

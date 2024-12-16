@@ -13,7 +13,7 @@ const withDecks = (eb: ExpressionBuilder<Database, "players">) => {
     return jsonArrayFrom(
         eb
             .selectFrom("decks")
-            .select(["decks.id", "decks.name"])
+            .select(["decks.id", "decks.name", "decks.is_archived"])
             .whereRef("players.id", "=", "decks.player_id")
     ).as("decks");
 };

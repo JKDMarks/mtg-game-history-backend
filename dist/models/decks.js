@@ -24,7 +24,7 @@ const withPlayer = (eb) => {
 const findOneDeck = (_a) => __awaiter(void 0, [_a], void 0, function* ({ deckId, userId, }) {
     let query = _1.default
         .selectFrom("decks")
-        .select(["id", "user_id", "name"])
+        .select(["id", "user_id", "name", "is_archived"])
         .select(withPlayer)
         .where("decks.id", "=", deckId);
     if (userId) {
@@ -60,10 +60,13 @@ const selectDeckCount = (currUserId) => __awaiter(void 0, void 0, void 0, functi
         .executeTakeFirst();
 });
 exports.selectDeckCount = selectDeckCount;
-const updateDeck = (_b) => __awaiter(void 0, [_b], void 0, function* ({ deckId, name, }) {
+const updateDeck = (_b) => __awaiter(void 0, [_b], void 0, function* ({ deckId, name, is_archived, }) {
     let query = _1.default.updateTable("decks").where("id", "=", deckId);
     if (name) {
         query = query.set({ name });
+    }
+    if (is_archived !== undefined) {
+        query = query.set({ is_archived });
     }
     return yield query.executeTakeFirst();
 });

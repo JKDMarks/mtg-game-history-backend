@@ -18,7 +18,7 @@ const mysql_1 = require("kysely/helpers/mysql");
 const withDecks = (eb) => {
     return (0, mysql_1.jsonArrayFrom)(eb
         .selectFrom("decks")
-        .select(["decks.id", "decks.name"])
+        .select(["decks.id", "decks.name", "decks.is_archived"])
         .whereRef("players.id", "=", "decks.player_id")).as("decks");
 };
 const findAllPlayers = (currUserId) => __awaiter(void 0, void 0, void 0, function* () {
