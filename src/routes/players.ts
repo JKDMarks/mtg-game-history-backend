@@ -14,8 +14,14 @@ const playersRouter = Router();
 
 playersRouter.get("/", async (req, res) => {
     const players = await findAllPlayers(req.currentUser.id);
+    if (
+        typeof req.query.is_archived == "string" &&
+        ["0", "false"].includes(req.query.is_archived.toLowerCase())
+    ) {
+        return res.json(players.filter((p) => !p.is_archived));
+    }
 
-    res.json(players);
+    return res.json(players);
 });
 
 playersRouter.get("/:playerId", async (req, res) => {
@@ -62,9 +68,13 @@ playersRouter.post("/:playerId/edit", async (req, res) => {
         const queryResult = await updatePlayer({
             playerId,
             name: req.body.name,
+            is_archived: req.body.is_archived,
         });
         if (Number(queryResult.numUpdatedRows) === 1) {
-            return res.json({ success: true });
+            return res.json({
+                success: true,
+                redirect: req.body.is_archived ? "/players" : undefined,
+            });
         }
     } catch (e) {
         return sendError(res, e);

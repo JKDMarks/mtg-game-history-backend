@@ -13,9 +13,22 @@ import { USER_LEVEL } from "../utils/constants";
 const decksRouter = Router();
 
 decksRouter.get("/", async (req, res) => {
-    const players = await findAllDecks(req.currentUser.id);
+    const decks = await findAllDecks(req.currentUser.id);
 
-    res.json(players);
+    if (
+        typeof req.query.is_archived == "string" &&
+        ["0", "false"].includes(req.query.is_archived.toLowerCase())
+    ) {
+        return res.json(
+            decks.filter(
+                (d) =>
+                    !d.is_archived &&
+                    (d.player === null || !d.player.is_archived)
+            )
+        );
+    }
+
+    return res.json(decks);
 });
 
 decksRouter.get("/:deckId", async (req, res) => {

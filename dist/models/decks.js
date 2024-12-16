@@ -18,7 +18,7 @@ const mysql_1 = require("kysely/helpers/mysql");
 const withPlayer = (eb) => {
     return (0, mysql_1.jsonObjectFrom)(eb
         .selectFrom("players")
-        .select(["id", "name"])
+        .select(["id", "name", "is_archived"])
         .whereRef("decks.player_id", "=", "players.id")).as("player");
 };
 const findOneDeck = (_a) => __awaiter(void 0, [_a], void 0, function* ({ deckId, userId, }) {
@@ -36,7 +36,7 @@ exports.findOneDeck = findOneDeck;
 const findAllDecks = (currUserId) => __awaiter(void 0, void 0, void 0, function* () {
     let query = _1.default
         .selectFrom("decks")
-        .select(["id", "user_id", "name"])
+        .select(["id", "user_id", "name", "is_archived"])
         .select(withPlayer)
         .orderBy("id");
     if (currUserId) {
@@ -48,7 +48,7 @@ exports.findAllDecks = findAllDecks;
 const createDeck = (name, player_id, user_id) => {
     return _1.default
         .insertInto("decks")
-        .values({ name, player_id, user_id })
+        .values({ name, player_id, user_id, is_archived: false })
         .executeTakeFirst();
 };
 exports.createDeck = createDeck;

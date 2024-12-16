@@ -9,18 +9,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const seedPlayers = (db) => __awaiter(void 0, void 0, void 0, function* () {
-    yield db
-        .insertInto("players")
-        .values([
-        { id: 1, user_id: 1, name: "Jeff Marks", is_archived: false },
-        { id: 2, user_id: 1, name: "Peter Paranicas", is_archived: false },
-        { id: 3, user_id: 1, name: "Ryan Burgett", is_archived: false },
-        { id: 4, user_id: 1, name: "Jonah Warner", is_archived: false },
-        { id: 5, user_id: 1, name: "Cole Anderson", is_archived: false },
-        { id: 6, user_id: 1, name: "Dan Shapiro", is_archived: false },
-    ])
-        .execute();
-    console.log("Players seeded successfully");
-});
-exports.default = seedPlayers;
+exports.down = exports.up = void 0;
+function up(db) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield db.schema
+            .alterTable("players")
+            .addColumn("is_archived", "boolean", (col) => col.defaultTo(false))
+            .execute();
+        yield db.schema
+            .alterTable("decks")
+            .addColumn("is_archived", "boolean", (col) => col.defaultTo(false))
+            .execute();
+    });
+}
+exports.up = up;
+function down(db) {
+    return __awaiter(this, void 0, void 0, function* () {
+        yield db.schema.alterTable("players").dropColumn("is_archived").execute();
+        yield db.schema.alterTable("decks").dropColumn("is_archived").execute();
+    });
+}
+exports.down = down;

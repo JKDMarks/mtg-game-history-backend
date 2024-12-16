@@ -53,7 +53,7 @@ exports.findOnePlayer = findOnePlayer;
 const createPlayer = (name, userId) => {
     return _1.default
         .insertInto("players")
-        .values({ name, user_id: userId })
+        .values({ name, user_id: userId, is_archived: false })
         .executeTakeFirst();
 };
 exports.createPlayer = createPlayer;
@@ -65,10 +65,13 @@ const selectPlayerCount = (currUserId) => __awaiter(void 0, void 0, void 0, func
         .executeTakeFirst();
 });
 exports.selectPlayerCount = selectPlayerCount;
-const updatePlayer = (_b) => __awaiter(void 0, [_b], void 0, function* ({ playerId, name, }) {
+const updatePlayer = (_b) => __awaiter(void 0, [_b], void 0, function* ({ playerId, name, is_archived, }) {
     let query = _1.default.updateTable("players").where("id", "=", playerId);
     if (name) {
         query = query.set({ name });
+    }
+    if (is_archived !== undefined) {
+        query = query.set({ is_archived });
     }
     return yield query.executeTakeFirst();
 });

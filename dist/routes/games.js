@@ -125,7 +125,6 @@ gamesRouter.post("/:gameId/edit", (req, res) => __awaiter(void 0, void 0, void 0
         }));
     }
     catch (e) {
-        console.log("***error", e);
         return (0, helpers_1.sendError)(res, e);
     }
     const updatedGame = yield (0, games_1.findOneGame)(gameId);

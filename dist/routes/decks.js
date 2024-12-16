@@ -15,8 +15,13 @@ const helpers_1 = require("../utils/helpers");
 const constants_1 = require("../utils/constants");
 const decksRouter = (0, express_1.Router)();
 decksRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const players = yield (0, decks_1.findAllDecks)(req.currentUser.id);
-    res.json(players);
+    const decks = yield (0, decks_1.findAllDecks)(req.currentUser.id);
+    if (typeof req.query.is_archived == "string" &&
+        ["0", "false"].includes(req.query.is_archived.toLowerCase())) {
+        return res.json(decks.filter((d) => !d.is_archived &&
+            (d.player === null || !d.player.is_archived)));
+    }
+    return res.json(decks);
 }));
 decksRouter.get("/:deckId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {

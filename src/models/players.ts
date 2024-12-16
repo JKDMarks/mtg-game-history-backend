@@ -6,6 +6,7 @@ export interface PlayersTable {
     id: Generated<number>;
     user_id: number;
     name: string;
+    is_archived: boolean;
 }
 
 const withDecks = (eb: ExpressionBuilder<Database, "players">) => {
@@ -66,7 +67,7 @@ export const findOnePlayer = async ({
 export const createPlayer = (name: string, userId: number) => {
     return db
         .insertInto("players")
-        .values({ name, user_id: userId })
+        .values({ name, user_id: userId, is_archived: false })
         .executeTakeFirst();
 };
 
@@ -83,14 +84,20 @@ export const selectPlayerCount = async (currUserId: number) => {
 export const updatePlayer = async ({
     playerId,
     name,
+    is_archived,
 }: {
     playerId: number;
     name?: string;
+    is_archived?: boolean;
 }) => {
     let query = db.updateTable("players").where("id", "=", playerId);
 
     if (name) {
         query = query.set({ name });
+    }
+
+    if (is_archived !== undefined) {
+        query = query.set({ is_archived });
     }
 
     return await query.executeTakeFirst();

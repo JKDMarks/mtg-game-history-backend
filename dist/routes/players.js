@@ -16,7 +16,11 @@ const constants_1 = require("../utils/constants");
 const playersRouter = (0, express_1.Router)();
 playersRouter.get("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const players = yield (0, players_1.findAllPlayers)(req.currentUser.id);
-    res.json(players);
+    if (typeof req.query.is_archived == "string" &&
+        ["0", "false"].includes(req.query.is_archived.toLowerCase())) {
+        return res.json(players.filter((p) => !p.is_archived));
+    }
+    return res.json(players);
 }));
 playersRouter.get("/:playerId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const playerId = parseInt(req.params.playerId);
@@ -56,9 +60,13 @@ playersRouter.post("/:playerId/edit", (req, res) => __awaiter(void 0, void 0, vo
         const queryResult = yield (0, players_1.updatePlayer)({
             playerId,
             name: req.body.name,
+            is_archived: req.body.is_archived,
         });
         if (Number(queryResult.numUpdatedRows) === 1) {
-            return res.json({ success: true });
+            return res.json({
+                success: true,
+                redirect: req.body.is_archived ? "/players" : undefined,
+            });
         }
     }
     catch (e) {

@@ -7,13 +7,14 @@ export interface DecksTable {
     user_id: number;
     player_id: number;
     name: string;
+    is_archived: boolean;
 }
 
 const withPlayer = (eb: ExpressionBuilder<Database, "decks">) => {
     return jsonObjectFrom(
         eb
             .selectFrom("players")
-            .select(["id", "name"])
+            .select(["id", "name", "is_archived"])
             .whereRef("decks.player_id", "=", "players.id")
     ).as("player");
 };
@@ -41,7 +42,7 @@ export const findOneDeck = async ({
 export const findAllDecks = async (currUserId?: number) => {
     let query = db
         .selectFrom("decks")
-        .select(["id", "user_id", "name"])
+        .select(["id", "user_id", "name", "is_archived"])
         .select(withPlayer)
         .orderBy("id");
 
@@ -59,7 +60,7 @@ export const createDeck = (
 ) => {
     return db
         .insertInto("decks")
-        .values({ name, player_id, user_id })
+        .values({ name, player_id, user_id, is_archived: false })
         .executeTakeFirst();
 };
 

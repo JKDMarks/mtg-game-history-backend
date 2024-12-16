@@ -143,7 +143,6 @@ gamesRouter.post("/:gameId/edit", async (req, res) => {
             }
         });
     } catch (e: unknown) {
-        console.log("***error", e);
         return sendError(res, e);
     }
 
